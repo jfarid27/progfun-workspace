@@ -77,6 +77,17 @@ class FunSetSuite extends FunSuite {
     val s1 = singletonSet(1)
     val s2 = singletonSet(2)
     val s3 = singletonSet(3)
+    val s4 = singletonSet(4)
+    val s5 = singletonSet(5)
+    val s6 = singletonSet(6)
+
+
+
+    val multi1 = union(union(s1, s2), s3)
+    val multi2 = union(union(s4, s5), s6)
+    val multi3 = union(union(s3, s4), s5)
+
+    val all = union(multi1, multi3)
   }
 
   /**
@@ -86,7 +97,7 @@ class FunSetSuite extends FunSuite {
    * Once you finish your implementation of "singletonSet", exchange the
    * function "ignore" by "test".
    */
-  ignore("singletonSet(1) contains 1") {
+  test("singletonSet(1) contains 1") {
     
     /**
      * We create a new instance of the "TestSets" trait, this gives us access
@@ -101,7 +112,98 @@ class FunSetSuite extends FunSuite {
     }
   }
 
-  ignore("union contains all elements") {
+  test("intersection contains intersecting elements") {
+    new TestSets {
+
+      val s = union(multi1, multi3)
+
+      assert(contains(s, 3))
+    }
+  }
+
+  test("intersection of disjoint sets contains null") {
+
+    new TestSets {
+      val s = union(multi1, multi2)
+
+      assert(!forall(multi1, ((x:Int) => !contains(s, x) ) ))
+
+      assert(!forall(multi2, ((x:Int) => !contains(s, x) ) ))
+
+    }
+  }
+
+  test("difference of two sets contains elements not in intersection") {
+
+    new TestSets {
+      val s = union(multi1, multi3)
+
+      assert(forall(intersect(multi1, multi3), ((x:Int)=> !contains(diff(multi1, multi3), x))) )
+    }
+
+  }
+
+  test("filter of set does not include elements that should be filtered") {
+
+    new TestSets {
+      val s = filter(all, ((x:Int) => x < 3));
+
+      assert(forall(multi3, ((x:Int) => !contains(s, x))))
+
+    }
+
+
+  }
+
+  test("forall should return true if predicate holds for all elements") {
+
+    new TestSets {
+
+      assert(forall(multi1, ((x:Int) => (x > 0 && x <= 3) )))
+
+    }
+
+  }
+
+  test("forall should return false if predicate fails for any element") {
+
+    new TestSets {
+
+      assert(!forall(multi1,    ((x:Int) => (x < 3))     )  )
+
+    }
+  }
+
+  test("exist should return true if predicate succeeds for any element") {
+    new TestSets {
+
+      assert(exists(all,    ((x:Int) => (x == 3))     )  )
+
+    }
+  }
+
+  test("exist should return false if predicate fails for all elements") {
+    new TestSets {
+
+      assert(!exists(all,    ((x:Int) => (x == 7))     )  )
+
+    }
+  }
+
+  test("map should contain transformed elements in new set") {
+    new TestSets {
+
+      val s = map(all, ((x:Int) => x+1))
+
+      val l = List(2, 3, 4, 5, 6)
+
+      assert(l.forall((x:Int) => contains(s, x) ))
+    }
+
+
+  }
+
+  test("union contains all elements") {
     new TestSets {
       val s = union(s1, s2)
       assert(contains(s, 1), "Union 1")
