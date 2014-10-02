@@ -2,6 +2,6 @@
 
 **/*.swp
 
-**/target
-**/lib_managed
+**/target/*
+**/lib_managed/*
 **/.idea
