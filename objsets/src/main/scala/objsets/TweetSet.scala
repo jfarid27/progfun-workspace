@@ -35,6 +35,8 @@ class Tweet(val user: String, val text: String, val retweets: Int) {
  */
 abstract class TweetSet {
 
+  def isEmpty():Boolean
+
   /**
    * This method takes a predicate and returns a subset of all the elements
    * in the original set for which the predicate is true.
@@ -66,7 +68,7 @@ abstract class TweetSet {
    * Question: Should we implment this method here, or should it remain abstract
    * and be implemented in the subclasses?
    */
-  def mostRetweeted: Tweet = ???
+  def mostRetweeted: Tweet
 
   /**
    * Returns a list containing all tweets of this set, sorted by retweet count
@@ -111,9 +113,13 @@ abstract class TweetSet {
 
 class Empty extends TweetSet {
 
+  def isEmpty():Boolean = true
+
   def filterAcc(p: Tweet => Boolean, acc: TweetSet): TweetSet = acc
 
   def union(that:TweetSet):TweetSet = that
+
+  def mostRetweeted():Tweet = throw new java.util.NoSuchElementException("Cannot find most Reweeted in empty set")
 
   /**
    * The following methods are already implemented
@@ -130,6 +136,8 @@ class Empty extends TweetSet {
 
 class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
 
+  def isEmpty():Boolean = false
+
   def filterAcc(p: Tweet => Boolean, acc: TweetSet): TweetSet =
     if (p(elem))  {
       left.filterAcc(p, acc.incl(elem) union right.filterAcc(p, acc))
@@ -139,6 +147,24 @@ class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
 
   def union(that:TweetSet):TweetSet =
     left union (right union that.incl(elem))
+
+  def mostRetweeted():Tweet = {
+
+    val leftRetweeted:Tweet = if (!left.isEmpty()) left.mostRetweeted else new Tweet("", "", 0)
+
+    val rightRetweeted:Tweet = if (!right.isEmpty()) right.mostRetweeted else new Tweet("", "", 0)
+
+    if ( (leftRetweeted.retweets > elem.retweets) && (leftRetweeted.retweets > rightRetweeted.retweets) ) {
+      return leftRetweeted
+    }
+
+    if ((rightRetweeted.retweets > elem.retweets) && (rightRetweeted.retweets > leftRetweeted.retweets)) {
+      return rightRetweeted
+    }
+
+    elem
+
+  }
 
   /**
    * The following methods are already implemented
