@@ -10,15 +10,34 @@ import Anagrams._
 @RunWith(classOf[JUnitRunner])
 class AnagramsSuite extends FunSuite {
 
-  test("wordOccurrences: abcd") {
-    assert(wordOccurrences("abcd") === List(('a', 1), ('b', 1), ('c', 1), ('d', 1)))
+  trait TestWords {
+    val word1 = "abcd"
+    val word2 = "Robert"
+    val word3 = "Hello"
+    val word4 = "H?E?L?L?O"
+    val word5 = "married"
+    val word6 = "player"
   }
 
-  test("wordOccurrences: Robert") {
-    assert(wordOccurrences("Robert") === List(('b', 1), ('e', 1), ('o', 1), ('r', 2), ('t', 1)))
+  trait TestSentences {
+    val sent1 = "I love you"
+    val sent2 = "The crow caws at midnight"
+    val sent3 = "Hello, World?"
   }
 
 
+  test("wordOccurrences: correctly counts chars in given word") {
+      new TestWords {
+        assert(wordOccurrences(word1) === List(('a', 1), ('b', 1), ('c', 1), ('d', 1)))
+        assert(wordOccurrences(word2) === List(('b', 1), ('e', 1), ('o', 1), ('r', 2), ('t', 1)))
+      }
+  }
+
+  ignore("wordOccurrences: ignores punctuation") {
+      new TestWords {
+        assert(wordOccurrences(word4) === List(('h', 1), ('e', 1), ('l', 2), ('o', 1))  )
+      }
+  }
 
   test("sentenceOccurrences: abcd e") {
     assert(sentenceOccurrences(List("abcd", "e")) === List(('a', 1), ('b', 1), ('c', 1), ('d', 1), ('e', 1)))
@@ -32,7 +51,8 @@ class AnagramsSuite extends FunSuite {
 
 
 
-  test("word anagrams: married") {
+  test("word anagrams correctly returns annagrams by occurrence") {
+
     assert(wordAnagrams("married").toSet === Set("married", "admirer"))
   }
 
