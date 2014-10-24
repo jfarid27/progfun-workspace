@@ -119,8 +119,35 @@ object Anagrams {
    *
    *  Note that the order of the occurrence list subsets does not matter -- the subsets
    *  in the example above could have been displayed in some other order.
+    *
+    * Numerical Power Sets
+    *
+    *
    */
-  def combinations(occurrences: Occurrences): List[Occurrences] = ???
+
+  def combinations(occurrences: Occurrences): List[Occurrences] = occurrences match {
+
+    case Nil => List(List())
+
+    case x :: xs => {
+
+      if (x._2 <= 0) return combinations(xs)
+
+      val restOfOccurrencesSets: List[Occurrences] = combinations(xs)
+
+      val reduced = (x._1, x._2 - 1)
+
+      val withHeadReduced = combinations(reduced :: xs)
+
+      val withHeadUnchanged = for {
+        list <- restOfOccurrencesSets
+      } yield x :: list
+
+      return withHeadUnchanged ++ withHeadReduced
+
+    }
+
+  }
 
   /** Subtracts occurrence list `y` from occurrence list `x`.
    * 
