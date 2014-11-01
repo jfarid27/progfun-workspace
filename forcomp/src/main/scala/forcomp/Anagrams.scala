@@ -69,6 +69,8 @@ object Anagrams {
         .map((x:(Char, List[(Char,Int)])) => (x._1, x._2.map( (y:(Char, Int)) => y._2).reduceRight(sum) ) )
         .alphabetical
 
+    def combinations: List[Occurrences] = combinations
+
   }
 
   def sentenceOccurrences(s: Sentence): Occurrences = s.occurrencesForSentence
@@ -224,6 +226,31 @@ object Anagrams {
    *
    *  Note: There is only one anagram of an empty sentence.
    */
-  def sentenceAnagrams(sentence: Sentence): List[Sentence] = ???
+  def sentenceAnagrams(sentence: Sentence): List[Sentence] = occurrenceAnagrams(sentence.occurrencesForSentence)
+
+  def getWordsInDictionary(occurrences:Occurrences):List[Word] = dictionaryByOccurrences.get(occurrences) match {
+
+    case Some(words) => words
+    case None => Nil
+
+  }
+
+  def occurrenceAnagrams(occurrences: Occurrences): List[Sentence] = occurrences match {
+
+    case Nil => List(List())
+
+    case actual => {
+
+      for {
+        subset <- combinations(actual)
+        word <- getWordsInDictionary(subset)
+        sentence <- occurrenceAnagrams( subtract(actual, wordOccurrences(word))  )
+      } yield word :: sentence
+
+
+    }
+
+
+  }
 
 }
